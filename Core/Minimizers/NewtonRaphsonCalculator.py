@@ -6,7 +6,7 @@ from Core.MinimizerCalculator import MinimizerCalculator
 
 
 class NewtonRaphsonCalculator(MinimizerCalculator):
-    gradientEq: Array
+    gradientEq: ImmutableDenseNDimArray
     hessianEq: List[ImmutableDenseNDimArray]
     def __init__(self, equation: Equality, variables: List[Symbol]):
         super().__init__(equation, variables)
@@ -18,7 +18,10 @@ class NewtonRaphsonCalculator(MinimizerCalculator):
         evaluateHessian = self.evaluateHessian(position)
         if evaluateHessian.det() == 0:
             return None
-        deltaPosition = evaluateHessian.inv() * Matrix(evaluateGradient)
+        try:
+            deltaPosition = evaluateHessian.inv() * Matrix(evaluateGradient)
+        except:
+            return None
         return position - Array(deltaPosition.transpose().tolist()[0])
 
     def evaluateGradient(self, position: Array) -> Array:

@@ -1,9 +1,10 @@
 from typing import List
 
 import sympy
-from sympy import Array, Equality, Symbol
+from sympy import Array, Equality, Symbol, Float
 
 from Core.MinimizerCalculator import MinimizerCalculator
+from config import PRECISION, MINIMUM_STEP_SIZE
 
 
 class ConjugateGradientCalculator(MinimizerCalculator):
@@ -15,7 +16,7 @@ class ConjugateGradientCalculator(MinimizerCalculator):
         super().__init__(equation, variables)
         self.gradientEq = sympy.derive_by_array(equation, variables)
 
-    def calculate(self, position: Array) -> Array:
+    def calculate(self, position: Array) -> Array | None:
         gCurrent = self.evaluateGradient(position)
         if gCurrent == [0 for i in range(len(self.variables))]:
             return position
@@ -35,25 +36,32 @@ class ConjugateGradientCalculator(MinimizerCalculator):
     def calculateB(self, gCurrent, gNext):
         pass;
 
-    def calculateStepSize(self, initialPosition: Array, direction: Array) -> float:
+    def calculateStepSize(self, initialPosition: Array, direction: Array) -> float | None:
         minValue = self.evaluateEq(initialPosition)
         minStep = 0
         deepStep = 0
         while minStep == 0:
             deepStep = deepStep + 1
             prevValue = None
+            if MINIMUM_STEP_SIZE > 10:
+                return None
             for i in range(self.aPrecesion):
-                step = ((i - 1) / (self.aPrecesion ** deepStep))
-                value = self.evaluateEq(initialPosition + direction * step)
+                step = Float((i - 1) / (self.aPrecesion ** deepStep), PRECISION)
+                value = self.evaluateEq(initialPosition + direction * Float(step, PRECISION))
                 if prevValue == value:
                     return None
                 prevValue = value
                 if value < abs(minValue):
                     minValue = value
                     minStep = step
+            k = 1
         return minStep
 
     def evaluateGradient(self, position: Array) -> Array:
         return Array(
-            [self.gradientEq[i].evalf(subs={self.variables[x]: position[x] for x in range(len(position))}) for i in
+            [self.gradientEq[i].evalf(subs={self.variables[x]: position[x] for x in range(len(position))}, n=PRECISION)
+             for i in
              range(len(position))])
+
+    def clear(self):
+        self.dk = None

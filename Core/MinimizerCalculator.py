@@ -2,6 +2,8 @@ from typing import List
 
 from sympy import Equality, Symbol, Array
 
+from config import PRECISION
+
 
 class MinimizerCalculator:
     equation: Equality
@@ -16,4 +18,7 @@ class MinimizerCalculator:
         pass;
 
     def evaluateEq(self, position: Array) -> float:
-        return self.equation.evalf(subs={self.variables[x]: position[x] for x in range(len(position))})
+        return self.equation.evalf(subs={self.variables[x]: position[x] for x in range(len(position))}, n=PRECISION)
+
+    def clear(self):
+        pass

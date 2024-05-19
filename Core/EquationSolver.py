@@ -52,7 +52,7 @@ class EquationSolver:
             for k in range(len(self.evaluation)):
                 if len(self.evaluation[k]) > i:
                     temp += self.evaluation[k][i]
-                    tempSize = + 1
+                    tempSize += 1
             if tempSize != 0:
                 y.append(temp / tempSize)
         return x, y
@@ -69,7 +69,7 @@ class EquationSolver:
             for k in range(len(self.evaluation)):
                 if len(self.evaluation[k]) > i + 1:
                     temp += abs(self.evaluation[k][i] - self.evaluation[k][i + 1])
-                    tempSize = + 1
+                    tempSize += 1
             if tempSize != 0:
                 x.append(i)
                 y.append(temp / tempSize)
@@ -96,7 +96,7 @@ class EquationSolver:
             for k in range(len(self.timePassed)):
                 if len(self.timePassed[k]) > i:
                     temp += self.timePassed[k][i]
-                    tempSize = + 1
+                    tempSize += 1
             if tempSize != 0:
                 x.append(i)
                 y.append(temp / tempSize)
@@ -105,12 +105,18 @@ class EquationSolver:
     def getStep(self, error: float):
         results = []
         for i in self.evaluation:
+            found = False
             for j in range(len(i)):
                 if i[j] < error:
-                    results.append(j)
+                    results.append(str(j))
+                    found = True
+                    break
+            if not found:
+                results.append("-")
+
         if len(results) == 0:
             return None
-        return min(results)
+        return results
 
     def print(self):
         print(self.name)

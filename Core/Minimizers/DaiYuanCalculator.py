@@ -4,6 +4,7 @@ from sympy import Equality, Symbol, Matrix
 
 from Core.Minimizers.ConjugateGradientCalculator import ConjugateGradientCalculator
 
+
 class DaiYuanCalculator(ConjugateGradientCalculator):
     def __init__(self, equation: Equality, variables: List[Symbol]):
         super().__init__(equation, variables)
